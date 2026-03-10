@@ -10,7 +10,7 @@
 ```hcl
 module "hc" {
   source  = "github.com/Ghanu398/terraform-aws-route53-healthcheck"
-  version = "1.0.0"
+  version = "1.0.1"
 
   name = "app-health"
   type = "HTTPS"
