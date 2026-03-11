@@ -12,3 +12,7 @@ module "test_endpoint" {
   port          = 443
   resource_path = "/"
 }
+
+output "health_check_id" {
+  value = module.test_endpoint.health_check_id
+}

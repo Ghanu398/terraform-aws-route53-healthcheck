@@ -1,0 +1,10 @@
+.terraform/
+.terraform.lock.hcl
+go.mod
+go.sum
+examples/calculated/.terraform/
+examples/endponint/.terraform/
+examples/cloudwatch/.terraform/
+examples/calculated/.teraform.lock.hcl
+examples/endpoint/.terraform.lock.hcl
+examples/cloudwatch/.terraform.lock.hcl

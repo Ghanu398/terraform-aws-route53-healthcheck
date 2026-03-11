@@ -7,9 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-# -----------------------------
-# 1️⃣ Endpoint Health Check Test
-# -----------------------------
 func TestEndpointHealthCheck(t *testing.T) {
 	t.Parallel()
 
@@ -27,9 +24,6 @@ func TestEndpointHealthCheck(t *testing.T) {
 	assert.NotEmpty(t, hcID)
 }
 
-# -----------------------------
-# 2️⃣ CloudWatch Health Check Test
-# -----------------------------
 func TestCloudWatchHealthCheck(t *testing.T) {
 	t.Parallel()
 
@@ -47,9 +41,6 @@ func TestCloudWatchHealthCheck(t *testing.T) {
 	assert.NotEmpty(t, hcID)
 }
 
-# -----------------------------
-# 3️⃣ Calculated Health Check Test
-# -----------------------------
 func TestCalculatedHealthCheck(t *testing.T) {
 	t.Parallel()
 
