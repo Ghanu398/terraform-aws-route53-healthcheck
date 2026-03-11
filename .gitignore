@@ -3,7 +3,7 @@
 go.mod
 go.sum
 examples/calculated/.terraform/
-examples/endponint/.terraform/
+examples/endpoint/.terraform/
 examples/cloudwatch/.terraform/
 examples/calculated/.teraform.lock.hcl
 examples/endpoint/.terraform.lock.hcl
@@ -11,6 +11,8 @@ examples/cloudwatch/.terraform.lock.hcl
 examples/calculated/terraform.tfstate
 examples/endpoint/terraform.tfstate
 examples/cloudwatch/terraform.tfstate
+*/terraform.tfstate
+*/terraform.tfstate.backup
 examples/calculated/terraform.tfstate.backup
 examples/endpoint/terraform.tfstate.backup
 examples/cloudwatch/terraform.tfstate.backup
