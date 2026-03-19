@@ -12,3 +12,72 @@ module "test_calculated" {
 
   child_health_threshold = 2
 }
+
+single health check 
+
+
+module "single_child_test" {
+  source = "../../"
+
+  name = "single-child"
+
+  type = "CALCULATED"
+
+  child_healthchecks = [
+    aws_route53_health_check.child_1.id
+  ]
+
+  child_health_threshold = 1
+
+  tags = {
+    Scenario = "single-child-edge-case"
+  }
+}
+
+
+## thresold between 1 and number of child health check 
+
+module "invalid_threshold_test" {
+  source = "../../"
+
+  name = "invalid-threshold"
+
+  type = "CALCULATED"
+
+  child_healthchecks = [
+    aws_route53_health_check.child_1.id,
+    aws_route53_health_check.child_2.id
+  ]
+
+
+  child_health_threshold = 0
+
+  tags = {
+    Scenario = "invalid-threshold"
+  }
+}
+
+dynamic thresold 
+
+module "invalid_threshold_test" {
+  source = "../../"
+
+  name = "invalid-threshold"
+
+  type = "CALCULATED"
+
+  child_healthchecks = [
+    aws_route53_health_check.child_1.id,
+    aws_route53_health_check.child_2.id
+  ]
+
+
+  child_health_threshold = length([
+    aws_route53_health_check.child_1.id,
+    aws_route53_health_check.child_2.id
+  ]) - 1
+
+  tags = {
+    Scenario = "invalid-threshold"
+  }
+}

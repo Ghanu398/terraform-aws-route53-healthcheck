@@ -94,11 +94,20 @@ variable "disable" {
 variable "child_healthchecks" {
   type    = list(string)
   default = []
+  validation {
+    condition = ( length(var.child_healthchecks) > 0 && length(var.child_healthchecks) <= 8 )
+    error_message = "child_healthchecks must greater than 0 and less than or equal to 8."
+
+  }
 }
 
 variable "child_health_threshold" {
   type    = number
   default = null
+  validation {
+    condition = ( var.child_health_threshold >= 1 && var.child_health_threshold <= length(var.child_healthchecks) )
+    error_message = "child_health_threshold must be a number between 1 and the count of child_healthchecks."
+  }
 }
 
 variable "tags" {
