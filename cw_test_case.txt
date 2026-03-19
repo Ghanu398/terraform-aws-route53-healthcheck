@@ -1,0 +1,60 @@
+Scenario 1: Basic CloudWatch Alarm-Based Health Check
+
+module "cloudwatch_basic_healthcheck" {
+  source = "../../"
+
+  name = "cloudwatch-basic-healthcheck"
+
+  type = "CLOUDWATCH_METRIC"
+
+  cloudwatch_alarm_name   = "HighCPU-Alarm"
+  cloudwatch_alarm_region = "ap-south-1"
+
+  insufficient_data_health_status = "LastKnownStatus"
+
+  tags = {
+    Environment = "prod"
+    CheckType   = "cloudwatch-basic"
+  }
+}
+
+Scenario: Handling INSUFFICIENT_DATA Properly
+
+module "cloudwatch_insufficient_data_handling" {
+  source = "../../"
+
+  name = "cloudwatch-insufficient-data"
+
+  type = "CLOUDWATCH_METRIC"
+
+  cloudwatch_alarm_name   = "HighCPU-Alarm"
+  cloudwatch_alarm_region = "ap-south-1"
+
+  insufficient_data_health_status = "Healthy"   # ✅ KEY PART
+
+  tags = {
+    Environment = "prod"
+    Strategy    = "no-false-failover"
+  }
+}
+
+
+
+Scenario: Custom Application Metric (Deep Health Check)
+
+module "cloudwatch_disabled_healthcheck" {
+  source = "../../"
+
+  name = "cw-disabled"
+
+  type = "CLOUDWATCH_METRIC"
+
+  cloudwatch_alarm_name   = aws_cloudwatch_metric_alarm.high_cpu.alarm_name
+  cloudwatch_alarm_region = "ap-south-1"
+
+  disable = true
+
+  tags = {
+    Scenario = "maintenance-mode"
+  }
+}

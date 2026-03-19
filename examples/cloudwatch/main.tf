@@ -21,17 +21,39 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
   alarm_actions = [aws_sns_topic.test.arn]
 }
 
+resource "aws_cloudwatch_metric_alarm" "high_network" {
+  alarm_name          = "HighNetworkIn-Alarm"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "NetworkIn"
+  namespace           = "AWS/EC2"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 10000000   # adjust as needed
+
+  treat_missing_data = "missing"
+}
+
+
+
+
 # Route53 Health Check (your module)
-module "test_cloudwatch" {
+module "cloudwatch_disabled_healthcheck" {
   source = "../../"
 
-  name = "test-cloudwatch-hc"
+  name = "cw-disabled"
+
   type = "CLOUDWATCH_METRIC"
 
   cloudwatch_alarm_name   = aws_cloudwatch_metric_alarm.high_cpu.alarm_name
   cloudwatch_alarm_region = "ap-south-1"
-}
 
+  disable = true
+
+  tags = {
+    Scenario = "maintenance-mode"
+  }
+}
 output "health_check_id" {
-  value = module.test_cloudwatch.health_check_id
+  value = module.cloudwatch_disabled_healthcheck.health_check_id
 }

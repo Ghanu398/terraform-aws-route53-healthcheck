@@ -1,18 +1,29 @@
 provider "aws" {
-  region = "ap-south-1"
+  region  = "ap-south-1"
+  profile = "terraform"
 }
 
-module "test_endpoint" {
-  source = "../../"   # go up to module root
+module "endpoint_ip_healthcheck" {
+  source = "../../"
 
-  name = "test-endpoint"
-  type = "HTTPS"
+  name = "ip-based-healthcheck"
 
-  fqdn          = "example.com"
-  port          = 443
-  resource_path = "/"
+  type = "HTTP"
+
+  ip_address =    "3.110.25.10" 
+  port       = 80
+
+  resource_path = "/health"
+
+  request_interval  = 30
+  failure_threshold = 3
+
+  tags = {
+    Environment = "prod"
+    Mode        = "direct-ip-check"
+  }
 }
 
 output "health_check_id" {
-  value = module.test_endpoint.health_check_id
+  value = module.endpoint_ip_healthcheck.health_check_id
 }

@@ -1,0 +1,14 @@
+# --- Your Module (Calculated Parent) ---
+module "test_calculated" {
+  source = "../../"   # points to your module
+
+  name = "test-calculated-hc"
+  type = "CALCULATED"
+
+  child_healthchecks = [
+    aws_route53_health_check.child_1.id,
+    aws_route53_health_check.child_2.id
+  ]
+
+  child_health_threshold = 2
+}

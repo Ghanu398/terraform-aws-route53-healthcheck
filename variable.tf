@@ -8,8 +8,8 @@ variable "type" {
   type        = string
 
   validation {
-    condition     = contains(["HTTP","HTTPS","TCP","CLOUDWATCH_METRIC","CALCULATED"], var.type)
-    error_message = "type must be HTTP, HTTPS, TCP, CLOUDWATCH_METRIC, or CALCULATED."
+    condition     = contains(["HTTP","HTTPS","TCP","HTTP_STR_MATCH","CLOUDWATCH_METRIC","CALCULATED"], var.type)
+    error_message = "type must be HTTP, HTTPS, TCP, HTTP_STR_MATCH, CLOUDWATCH_METRIC, or CALCULATED."
   }
 }
 
@@ -20,7 +20,11 @@ variable "fqdn" {
   type    = string
   default = null
 }
-
+variable "ip_address" {
+  type    = string
+  default = null
+  
+}
 variable "port" {
   type    = number
   default = null
@@ -74,6 +78,16 @@ variable "insufficient_data_health_status" {
   }
 }
 
+variable "measure_latency" {
+  type    = bool
+  default = false
+}
+
+variable "disable" {
+  type = bool 
+  default = false
+}
+
 # -------------------------
 # Calculated Inputs
 # -------------------------
@@ -85,4 +99,20 @@ variable "child_healthchecks" {
 variable "child_health_threshold" {
   type    = number
   default = null
+}
+
+variable "tags" {
+  description = "Tags for health check"
+  type        = map(string)
+  default     = {}
+}
+
+variable "inverted_health_check" {
+  type = bool
+  default = false
+}
+
+variable "regions" {
+  type = list(string)
+  default = ["us-east-1", "us-west-1", "us-west-2", "eu-west-1", "ap-southeast-1", "ap-southeast-2", "ap-northeast-1", "sa-east-1"]
 }
