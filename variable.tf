@@ -8,50 +8,8 @@ variable "type" {
   type        = string
 
   validation {
-    condition     = contains(["HTTP","HTTPS","TCP","HTTP_STR_MATCH","CLOUDWATCH_METRIC","CALCULATED"], var.type)
-    error_message = "type must be HTTP, HTTPS, TCP, HTTP_STR_MATCH, CLOUDWATCH_METRIC, or CALCULATED."
-  }
-}
-
-# -------------------------
-# Endpoint Inputs
-# -------------------------
-variable "fqdn" {
-  type    = string
-  default = null
-}
-variable "ip_address" {
-  type    = string
-  default = null
-  
-}
-variable "port" {
-  type    = number
-  default = null
-}
-
-variable "resource_path" {
-  type    = string
-  default = null
-}
-
-variable "search_string" {
-  type    = string
-  default = null
-}
-
-variable "failure_threshold" {
-  type    = number
-  default = 3
-}
-
-variable "request_interval" {
-  type    = number
-  default = 30
-
-  validation {
-    condition     = contains([10,30], var.request_interval)
-    error_message = "request_interval must be 10 or 30 seconds."
+    condition     = contains(["CLOUDWATCH_METRIC","CALCULATED"], var.type)
+    error_message = "Only CLOUDWATCH_METRIC and CALCULATED are allowed."
   }
 }
 
@@ -61,11 +19,21 @@ variable "request_interval" {
 variable "cloudwatch_alarm_name" {
   type    = string
   default = null
+
+  validation {
+    condition     = var.type != "CLOUDWATCH_METRIC" || var.cloudwatch_alarm_name != null
+    error_message = "cloudwatch_alarm_name must be provided when type is CLOUDWATCH_METRIC."
+  }
 }
 
 variable "cloudwatch_alarm_region" {
   type    = string
   default = null
+
+  validation {
+    condition     = var.type != "CLOUDWATCH_METRIC" || var.cloudwatch_alarm_region != null
+    error_message = "cloudwatch_alarm_region must be provided when type is CLOUDWATCH_METRIC."
+  }
 }
 
 variable "insufficient_data_health_status" {
@@ -84,7 +52,7 @@ variable "measure_latency" {
 }
 
 variable "disable" {
-  type = bool 
+  type    = bool 
   default = false
 }
 
@@ -92,21 +60,60 @@ variable "disable" {
 # Calculated Inputs
 # -------------------------
 variable "child_healthchecks" {
-  type    = list(string)
+  type = list(object({
+    id   = string
+    type = string
+  }))
   default = []
-  validation {
-    condition = ( length(var.child_healthchecks) > 0 && length(var.child_healthchecks) <= 8 )
-    error_message = "child_healthchecks must greater than 0 and less than or equal to 8."
 
+  #Length validation
+  validation {
+    condition = (
+      var.type != "CALCULATED" ||
+      (length(var.child_healthchecks) > 0 && length(var.child_healthchecks) <= 8)
+    )
+    error_message = "For CALCULATED type, child_healthchecks must be between 1 and 8."
+  }
+
+  #Only CLOUDWATCH_METRIC allowed
+  validation {
+    condition = (
+      var.type != "CALCULATED" ||
+      alltrue([
+        for hc in var.child_healthchecks :
+        hc.type == "CLOUDWATCH_METRIC"
+      ])
+    )
+    error_message = "All child health checks must be of type CLOUDWATCH_METRIC."
+  }
+
+  #Prevent duplicate IDs
+  validation {
+    condition = (
+      var.type != "CALCULATED" ||
+      length([
+        for hc in var.child_healthchecks : hc.id
+      ]) == length(distinct([
+        for hc in var.child_healthchecks : hc.id
+      ]))
+    )
+    error_message = "Duplicate child health check IDs are not allowed."
   }
 }
 
 variable "child_health_threshold" {
   type    = number
   default = null
+
   validation {
-    condition = ( var.child_health_threshold >= 1 && var.child_health_threshold <= length(var.child_healthchecks) )
-    error_message = "child_health_threshold must be a number between 1 and the count of child_healthchecks."
+    condition = (
+      var.type != "CALCULATED" ||
+      (
+        var.child_health_threshold >= 1 &&
+        var.child_health_threshold <= length(var.child_healthchecks)
+      )
+    )
+    error_message = "child_health_threshold must be between 1 and number of child_healthchecks."
   }
 }
 
@@ -117,11 +124,6 @@ variable "tags" {
 }
 
 variable "inverted_health_check" {
-  type = bool
+  type    = bool
   default = false
-}
-
-variable "regions" {
-  type = list(string)
-  default = ["us-east-1", "us-west-1", "us-west-2", "eu-west-1", "ap-southeast-1", "ap-southeast-2", "ap-northeast-1", "sa-east-1"]
 }

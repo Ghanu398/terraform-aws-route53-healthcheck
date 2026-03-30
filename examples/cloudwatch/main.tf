@@ -46,7 +46,7 @@ module "cloudwatch_disabled_healthcheck" {
   type = "CLOUDWATCH_METRIC"
 
   cloudwatch_alarm_name   = aws_cloudwatch_metric_alarm.high_cpu.alarm_name
-  cloudwatch_alarm_region = "ap-south-1"
+  cloudwatch_alarm_region = "us-east-1"
 
   disable = true
 
